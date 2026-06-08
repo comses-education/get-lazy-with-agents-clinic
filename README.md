@@ -22,7 +22,7 @@ Here are 5 questions that might be the first steps onto the road:
 4. "give me a meta-frame for: ..." # "building a house in the forrest"
 5. "what are the best questions to ask in order to understand how ..." # "LLMs work"
 ```
-# What is this clinic about?
+## What is this clinic about?
 
 > The [first edition](https://github.com/comses-education/get-lazy-with-llms-clinic) of this clinic was about **how to use LLMs effectively**, focused mainly on **better prompting techniques**.
 >
@@ -39,7 +39,7 @@ Pick your comfort level for working with AI agents:
 
 ## Prerequisites for this clinic:
 
-- **Get an agent.** Common ones: [Claude Code](https://claude.ai/), [gemini CLI](https://geminicli.com/), [codex](https://openai.com/codex/), [opencode](https://opencode.ai/), [pi.dev](https://pi.dev/), etc.
+- **Get an agent.** Common ones: [Claude Code](https://claude.ai/), [gemini CLI](https://geminicli.com/), [codex](https://openai.com/codex/), [hermes-agent](https://hermes-agent.nousresearch.com/), [opencode](https://opencode.ai/), [pi.dev](https://pi.dev/), etc.
 - **Pick a task.** *Refactor a legacy function. Summarise a research paper. Design a database schema. Draft. Plan a renovation.*
 - [agents-101](./guides/agents-101.md) - everything you need to know about what an agent is, what it can do and how to control it
 
@@ -133,22 +133,21 @@ If you are new to agents, I recommend to close this guide and work with agents o
 ---
 # Why Human+AI collaboration fails?
 
-### Human constraints:
+### 1. Human constraints:
 1. Bound cognition
 2. Scarce time
 3. Unknown unknowns
 
-## Agent/LLM constraints:
+### 2. Agent/LLM constraints:
 1. Context size
    1. limited work can be done in an agent session
    2. limited content can be added to the context
-2. Knowledge cut-off
+2. Knowledge cut-off, Field churn
 3. Confident ≠ correct (hallucinations)
 4. Non-determinism
 5. Security exposure
-6. Field churn
 
-## Systemic constraints:
+### 3. Systemic constraints:
 1. mutual unverifiability - you never know what the agent "understands" and vice versa.
 
 # The Process: Human+AI collaboration
@@ -191,24 +190,21 @@ In later sections we will use our AI agent to help us design **a process** that 
 
 ## What humans are good at
 
-- **Intent** — what you want, and why. *"Get this past Nature's editor, not just any editor."* The agent can't infer it from nothing.
-- **Intuition** — the pre-reasoned signal. *"Something's off here"* — before you can name what.
-- **Decision Making** — committing when the trade-off is real. *Latency or maintainability — which matters today?*
-- **Domain Taste** — *good* vs merely *correct*. The abstract reads like a master's thesis; it should sound like a working scientist.
-- **Stakes awareness** — what breaks, who notices, how reversible. *Ship-tonight code vs throwaway script.*
+- **Intent** — know what they want, and why it's worth wanting.
+- **Intuition** — feel that something's wrong before they can explain why.
+- **Decision-making** — commit when the trade-off is real and no option is clean. *Latency or maintainability — which matters today?*
+- **Domain Taste** — tell elegant from merely correct. *A beautiful proof versus a brute-force one.*
+- **Stakes awareness** — know what a failure costs, who it hits, and how reversible it must be.
 
 ## What AI agents are good at
 
-- **Language** — domain *register*. Sounds like a referee on a Nature submission; like a labour lawyer answering a friend.
-- **Code, structure & pattern recognition** — *"these five functions are one function in disguise."*
-- **Understanding human intent** — fills in *probably you meant X* from a half-formed prompt.
-- **Tool use** — picks the right API; recovers from a 500; chains calls.
-- **Parallel context** — holds a 500-page spec; we hold a paragraph.
-- **Coverage** — *"what about empty input? unicode? leap seconds?"* — cases you wouldn't enumerate.
-- **Options generation** — ten variants of the same draft; we manage two.
-- **Domain knowledge** — domain *content*. Knows ICD-10 codes start with a letter; that ODD protocols follow Grimm et al.
-- **Grunt work** — 100 boring API calls without complaint.
-- **Tireless thoroughness** — checks line 4,832 with the same care as line 7.
+- **Language** — catch what you meant from a half-formed prompt, and hand you the words you didn't know you were missing.
+- **Code, structure & patterns** — a formal special case of language: see the pattern, grasp the structure.
+- **Tool use** — chain many tools toward a goal without being told each step.
+- **Parallel context** — you hold four-to-seven things in your head; an agent holds the whole 500-page spec.
+- **Coverage** — you sample a few points; it covers the space. Edge cases you'd never list; ten variants where you'd manage two.
+- **Domain knowledge** — fluent across many domains
+- **Tireless thoroughness** — checks line 4,832 as carefully as line 7.
 
 We want to design the **Human+AI collaboration process** to compensate for the weaknesses and amplify the strengths of both:
 
@@ -218,25 +214,42 @@ We want to design the **Human+AI collaboration process** to compensate for the w
 
 Each method routes around one or more constraints. Methods stack: a stubborn constraint may need two. The methods don't eliminate constraints — they make them manageable.
 
-## Constraint → Method map
+## Human | Bound cognition ⟶ `simplify`
 
-| Constraint family | Constraint | Primary method | Stacks well with | The move |
-|---|---|---|---|---|
-| Human | Bound cognition | **Decompose** | Hand off | Break the task into agent-shaped chunks |
-| Human | Scarce time | **Hand off** | Decompose, Verify | Delegate with full context, authority limits, a stopping condition |
-| Human | Unknown unknowns | **Interview** | Research | Agent interviews you until 98% understanding |
-| Agent | Context size | **Decompose** | Sub-agents, Session hand-off | Carry only relevant context per call |
-| Agent | Context size | **Progressive disclosure** | Decompose, Sub-agents | Load an index first; fetch details on demand |
-| Agent | Session boundary | **Session hand-off** | Decompose | Agent writes a state document; next session reads it |
-| Agent | Exploration cost | **Sub-agents** | Decompose | Spawn fresh sub-agent contexts; aggregate summaries |
-| Agent | Knowledge cut-off | **Research** | Verify | Web search; read official docs; cite sources |
-| Agent | Confident ≠ correct | **Verify** | Hooks, Interview | Run the test; read the source; check the docs |
-| Agent | Non-determinism | **Evaluate** | Verify | Run N times; score against criteria; track the rate |
-| Agent | Field churn | **Research** | Interview | Re-research before acting on any harness/API claim |
-| Systemic | Mutual unverifiability | **Interview** | Verify, Hooks | Surface silent premises on both sides |
-| Systemic | Security exposure | **Hooks** | Verify | Gate agent actions deterministically at the harness layer |
+A picture you read in seconds beats a spec you'd slog through for an hour.
 
-## Decompose: chunk the task into agent-shaped parts
+```sh
+"explain as if I am 5-years-old"
+"draw a mermaid sequence diagram of the auth handshake"
+"render the data flow as a mermaid flowchart — one node per transform"
+"build a single-page interactive site to step through the model's behavior, parameter by parameter"
+```
+
+## Human | Scarce time ⟶ `delegate the task end-to-end`
+
+You review the diff, not the loop.
+
+Design a closed loop: give the agent full context, authority limits, a stopping condition. Don't give it implicit assumptions or anything irreversible.
+
+```sh
+"implement the function for X. The existing test is the spec.
+Stop when tests pass. Do not change the test."
+```
+
+## Human | Unknown unknowns ⟶ `interview, meta-frame`
+
+Unknown unknowns and mutual unverifiability — same move: surface silent premises before acting on them. Aim for 98% understanding. Surface the meta-frame.
+
+```sh
+"before drafting, interview me until you're 98% sure you understand the task.
+Name my silent assumptions and yours.
+Premortem: imagine this has already failed — why?
+Invert: what would make this go wrong?"
+```
+
+Minutes spent here. The work that follows lands.
+
+## Agent | Huge context ⟶ `decompose`
 
 One omnibus prompt fits neither working memory nor context. Identify the **Parts** of the meta-frame; run them as separate prompts.
 
@@ -252,20 +265,16 @@ One omnibus prompt fits neither working memory nor context. Identify the **Parts
 
 Each part: one input, one output, one checkable result.
 
-## Hand off: delegate a task end-to-end
 
-Give the agent full context, authority limits, a stopping condition. Don't give it implicit assumptions or anything irreversible.
+## Agent | Session Limit: Hitting session limit? ⟶ `compact` or `handoff document`
 
-```sh
-"implement the function for X. The existing test is the spec.
-Stop when tests pass. Do not change the test."
-```
+A session approaches its context limit, the agent starts generating slop, but you haven't finished your work yet.
 
-You review the diff, not the loop.
+- use the `/compact` skill - the agent replaces your entire session with an auto-generated summary
+- you ask the agent to `"write a handoff document"`
 
-## Session hand-off: bridge state across sessions
-
-A session ends; the agent forgets. Externalise the state into a document the next session reads.
+The difference between the 2 methods is subtle and depends on the nature of your work.
+Use a handoff document when you need the exact source files to be loaded in the context to continue work:
 
 ```sh
 # end of session:
@@ -276,80 +285,62 @@ Be terse and specific. Include file paths."
 "@HANDOFF.md continue the work."
 ```
 
-The cheapest form of session-spanning memory.
 
-## Sub-agents: spawn fresh contexts in parallel
+## Agent | Context Limit: A side-quest from the main session? ⟶ `sub-agents`
 
-Exploration eats parent context. Move it into a child with a fresh window.
+Exploration eats the main context. A sub-agent has its own fresh context window.
 
 ```sh
-# spawn fresh sub-agents:
-"find every file that imports X. Return paths only."
-"try three approaches to Y. Return tradeoffs only."
-"read these five papers. Extract methods sections only."
+"spawn a sub-agent: find every file that imports X. Return paths only."
+"spawn 3 sub-agents: try three approaches to Y. Return tradeoffs only."
+"spawn 5 sub-agents: read these five papers. Extract methods sections only."
 ```
 
 The parent reads the summary; the noise stays in the child. Bad fit for back-and-forth tasks — keep those in the parent. Spawn N at once for wall-clock speed.
 
-## Progressive disclosure: load context on demand
+## Agent | Context Limit: Polluted context? ⟶ `progressive disclosure`
 
-Stuffing every doc, schema, and template into the context wastes the window on material the agent will never read. Layer it — short index up front, details fetched only when the task reaches them.
+You might have extensive documentation in your project.
+Usually not all this documentation is needed at the same time.
+Layer it — short index up front, details fetched only when the task reaches them. Agents can follow references in your documents.
 
 ```sh
-# skill: short SKILL.md, templates loaded on demand
-"@SKILL.md"                       # ~50 lines: triggers, when to use, where to look next
-"@SKILL.md then @templates/X.md"  # load the template only when X is the step
+"what is this project about?" # agent reads a small CLAUDE.md at the root of the repo by default
 
-# tool catalog: schemas fetched on call
-"list deferred tools"             # names + one-line descriptions
-"fetch schema for X"              # full input/output right before invoking
+# then it might read deeper depending on what you ask
+"how does the authentication module work?" # agent reads src/modules/auth/README.md
 
-# docs: index points at chapters
-"@docs/index.md"                  # one-line pointers to every section
-"@docs/auth.md"                   # full chapter when auth is the topic
+# it will not read individual tool schemas if there is enough information in the index
+"list deferred tools"             # agent reads .../tools/index.md - tool names + one-line descriptions
+"fetch schema for X"              # full input/output right before invoking .../tools/X/schema.json
 ```
 
-Pay context for what you read, not for what you might read.
+## Agent | Knowledge cut-off or field churn ⟶ `research`
 
-## Verify: run the test, don't trust the report
+The training cutoff is in the past. The field changes quarterly. Memory of an API is a guess.
+Anything that touches an API, or a public service, or the agent itself — research it first.
+
+```sh
+"web-search the current Claude Code hooks schema. Cite official docs. Write findings to refs/hooks-2026-05.md."
+"research your own capabilities from the official docs and save them in refs/agent-capabilities.md"
+```
+
+## Agent | Confident ≠ correct (hallucinations) ⟶ `verify`
 
 LLM fluency reads as confidence. Confidence is not evidence.
 
 ```sh
-"all tests pass"                # → run them yourself
-"citation X supports claim Y"   # → read the source
-"I checked the docs"            # → check the docs
+"all tests pass"                # → run them yourself, instruct the agent to run the tests
+"citation X supports claim Y"   # → read the source, instruct another agent to verify each claim
+"I checked the docs"            # → check the docs, instruct another agent to cite the docs
 ```
 
 Better: a Stop hook that refuses *done* until the test command exits 0.
 
-## Interview: surface the meta-frame before acting
 
-Unknown unknowns and mutual unverifiability — same move: surface silent premises before acting on them. Aim for 98% understanding.
+## Agent | Non-determinism ⟶ `evaluate`
 
-```sh
-"before drafting, interview me until you're 98% sure you understand the task.
-Name my silent assumptions and yours.
-Premortem: imagine this has already failed — why?
-Invert: what would make this go wrong?"
-```
-
-Minutes spent here. The work that follows lands.
-
-## Research: refresh the agent on cut-off and churn
-
-The training cutoff is in the past. The field changes quarterly. Memory of an API is a guess.
-
-```sh
-"web-search the current Claude Code hooks schema. Cite official docs.
-Write findings to refs/hooks-2026-05.md."
-```
-
-Anything that touches the harness, an API, or a public service — research it first.
-
-## Evaluate: score the process across runs
-
-A single output is a draw from a distribution, not a measurement. To measure: N draws, **Criteria**, a score.
+A single output is a draw from a distribution, not a measurement. To measure: N draws, criteria, a score.
 
 ```sh
 "run @prompts/literature-search.md 10 times against the same criteria.
@@ -358,9 +349,9 @@ Score each output 0-10 for relevance. Output: prompt | mean | std."
 
 Without the eval, you can't tell which variant moves 6/10 to 8/10.
 
-### Hooks: gate agent actions at the harness layer
+## Agent | Security ⟶ `hooks`
 
-The agent cannot police itself — prompts can be ignored, talked around, hijacked. Hooks sit below the model and intercept every tool call. Configuration, not prompts; nothing for the agent to talk around.
+The agent cannot police itself — prompts can be ignored, talked around, hijacked. Hooks sit below the model and intercept every tool call. Gate your agent actions at the harness layer. Configuration, not prompts; nothing for the agent to talk around.
 
 ```sh
 # PreToolUse:  refuse `rm -rf` unless confirm.txt exists
@@ -373,7 +364,7 @@ For anything that touches files, the network, or shared infrastructure — write
 
 # Level 2: Putting it all together: odder - a process example
 
-Here is an example of an interactive, multi-session process that generates an [ODD Protocol](https://www.jasss.org/23/2/7.html) for an agent-based model: https://github.com/comses/odder
+[Here](https://github.com/comses/odder) is an example of an interactive, multi-session process that generates an [ODD Protocol](https://www.jasss.org/23/2/7.html) for an agent-based model.
 
 The [ODD generation process](./examples/odder/odder-execution.md) follows a 4-step process with each step triggered manually:
 ```sh
@@ -384,9 +375,9 @@ The [ODD generation process](./examples/odder/odder-execution.md) follows a 4-st
 ```
 If you have a lot of context, we recommend one step per agent session. After each step, artifacts are generated by the agent and should be reviewed by the human. This catches hallucinations or cognitive drift early.
 
-As you might have noticed the ODD Generation process is packaged as a [claude plugin](https://code.claude.com/docs/en/plugins). Different agent providers will have their conventions, but in its essence, this is a bundle of agent skills.
+As you might have noticed the [ODD generation process](./examples/odder/odder-execution.md) is packaged as a [claude plugin](https://code.claude.com/docs/en/plugins). Different agent providers will have their conventions, but in its essence, this is a bundle of agent skills.
 
-The plugin itself was generated by [this process](./examples/odder/odder-process.md).
+The plugin itself was also [generated](./examples/odder/odder-process.md) by an AI agent.
 
 
 
@@ -528,13 +519,28 @@ This clinic prioritizes principles over coverage. This is a short list of topics
 - **Knowledge ingestion / corpus grounding** — RAG patterns, corpus curation, citation provenance. We say `@file` and stop.
 
 **Where to look:**
-- Harness Engineering: [Continuous Claude v4.7](https://github.com/parcadei/ContinuousClaudeV4.7); [Anthropic Harness design for long-running application development](https://www.anthropic.com/engineering/harness-design-long-running-apps)
-- Memory: [Anthropic memory tool](https://platform.claude.com/docs/en/agents-and-tools/tool-use/memory-tool); [mem0](https://github.com/mem0ai/mem0); [Letta](https://github.com/letta-ai/letta);
-- Spec-driven development: [GitHub Spec Kit](https://github.com/github/spec-kit); [spec-kitty](https://github.com/Priivacy-ai/spec-kitty); [openspec](https://github.com/Fission-AI/OpenSpec);
-- Cost & latency: [Anthropic models overview](https://platform.claude.com/docs/en/about-claude/models/overview); [Prompt caching docs](https://platform.claude.com/docs/en/build-with-claude/prompt-caching).
-- Process lifecycle & eval-driven iteration: [skill-creator skill](https://github.com/anthropics/skills/blob/main/skills/skill-creator/SKILL.md) — Anthropic's canonical skill-builder.
-- Reasoning patterns: [Anthropic prompt engineering docs](https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview);
-- Reliability: [Temporal for AI](https://temporal.io/solutions/ai);
+- [Orchestrate subagents at scale with dynamic workflows](https://code.claude.com/docs/en/workflows)
+- Harness Engineering:
+  - [Continuous Claude v3](https://github.com/parcadei/Continuous-Claude-v3)
+  - [Continuous Claude v4.7](https://github.com/parcadei/ContinuousClaudeV4.7)
+  - [Anthropic Harness design for long-running application development](https://www.anthropic.com/engineering/harness-design-long-running-apps)
+- Memory:
+  - [Anthropic memory tool](https://platform.claude.com/docs/en/agents-and-tools/tool-use/memory-tool)
+  - [mem0](https://github.com/mem0ai/mem0)
+  - [Letta](https://github.com/letta-ai/letta)
+- Spec-driven development:
+  - [GitHub Spec Kit](https://github.com/github/spec-kit)
+  - [spec-kitty](https://github.com/Priivacy-ai/spec-kitty)
+  - [openspec](https://github.com/Fission-AI/OpenSpec)
+- Cost & latency:
+  - [Anthropic models overview](https://platform.claude.com/docs/en/about-claude/models/overview)
+  - [Prompt caching docs](https://platform.claude.com/docs/en/build-with-claude/prompt-caching)
+- Process lifecycle & eval-driven iteration:
+  - [skill-creator skill](https://github.com/anthropics/skills/blob/main/skills/skill-creator/SKILL.md) - Anthropic's canonical skill-builder.
+- Reasoning patterns:
+  - [Anthropic prompt engineering docs](https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview)
+- Reliability:
+  - [Temporal for AI](https://temporal.io/solutions/ai)
 
 **This clinic's lineage:**
 
